@@ -50,6 +50,7 @@ class ClientReceiveService:
     def __init__(self, client_socket):
         self.client_socket = client_socket
         self.message = None
+        self.change_current_scene = None
 
     def receive(self, sock, data_length):
         data_bytes = sock.recv(data_length)

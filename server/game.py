@@ -19,8 +19,7 @@ class Game:
         self.players = [{
             "id": index,
             "socket": player,
-            "score": 0,
-            "board": [i for i in range(1, 9)],
+            "board": [i for i in range(1, 10)],
             "last_roll": None,
             "name": "Player 1",
         } for index, player in enumerate(players_sockets)]
@@ -46,8 +45,6 @@ class Game:
         self.players.remove(player)
 
     def end(self):
-        # check who won
-
         self.game_live = False
 
     def terminate(self):
@@ -72,7 +69,7 @@ class Game:
             print("Rolling 6 sided dice")
             roll = random.randint(1, 6)
         else:
-            roll = random.randint(1, 12)
+            roll = random.randint(2, 12)
         player["last_roll"] = roll
         return roll
 
@@ -117,22 +114,9 @@ class Game:
 
     def next_player_turn(self):
         player = self.get_current_player()
+        self.turn_player_id = (self.turn_player_id + 1) % len(self.players)
 
-        turn_temp = (self.turn_player_id + 1) % len(self.players)
-        for i in range(len(self.players)):
-            if self.get_player(turn_temp)["score"] >= 45:
-                turn_temp = (turn_temp + 1) % len(self.players)
-            else:
-                break
-            #TODO: end condition
-
-        self.turn_player_id = turn_temp
-
-        player["score"] += sum(player["board"])
-        player["board"] = [i for i in range(1, 9)]
-        if player["score"] >= 45:
-            return True
-        return False
+        player["board"] = [i for i in range(1, 10)]
 
     def check_win_condition(self):
         player = self.get_current_player()

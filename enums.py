@@ -34,3 +34,5 @@ class ResponseType(CustomEnum):
     NO_MOVES = "no_moves"
     PLAYER_ELIMINATED = "player_eliminated"
     MOVE_MADE = "move_made"
+    GAME_ENDED = "game_ended"
+    SESSION_DESTROYED = "session_destroyed"

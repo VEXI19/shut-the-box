@@ -55,6 +55,21 @@ class ServerResponseService:
                 if user_socket != client_socket:
                     self.send(user_socket, response)
 
+    def game_finished_response(self, game):
+        player = game.get_current_player()
+        response = ServerResponseService.__create_response(ResponseStatus.SUCCESS, ResponseType.GAME_ENDED, {
+            "message": f"Player {player['name']} has won the game",
+        })
+        for user_socket in game.players:
+            self.send(user_socket["socket"], response)
+
+    def session_destroyed_response(self, session):
+        response = ServerResponseService.__create_response(ResponseStatus.SUCCESS, ResponseType.SESSION_DESTROYED, {
+            "message": "Session has been destroyed"
+        })
+        for user_socket in session.get_user_sockets():
+            self.send(user_socket, response)
+
     def start_game_response(self, session):
         response = ServerResponseService.__create_response(ResponseStatus.SUCCESS, ResponseType.GAME_STARTED, {
             "message": "Game has started",
@@ -79,7 +94,8 @@ class ServerResponseService:
 
     def roll_dice_response(self, roll_result, game):
         response = ServerResponseService.__create_response(ResponseStatus.SUCCESS, ResponseType.DICE_ROLLED, {
-            "roll_result": roll_result
+            "roll_result": roll_result,
+            "board": game.get_current_player()["board"]
         })
         for user_socket in game.players:
             self.send(user_socket["socket"], response)
@@ -87,7 +103,6 @@ class ServerResponseService:
     def no_moves_response(self, game):
         response = ServerResponseService.__create_response(ResponseStatus.SUCCESS, ResponseType.NO_MOVES, {
             "message": "No moves available",
-            "score": game.get_score()
         })
         for user_socket in game.players:
             response["data"]["current_turn_player_id"] = game.get_current_player()["id"]

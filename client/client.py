@@ -67,33 +67,32 @@ class Client:
             print(f'Socket error: {e}')
 
     def close(self):
+        print(self.client_socket)
         self.client_socket.close()
 
 
 def event_trigger(client_instance):
     while True:
-        command = int(input("Enter message to send to server (type 'exit' to close): "))
+        command = input("Enter message to send to server (type 'exit' to close): ")
         match command:
-            case 'exit':
-                client_instance.close()
-                break
-            case 1:
+            case "1":
                 client_instance.client_request_service.create_session_request()
-            case 2:
+            case "2":
                 session_code = input("Enter session code (type 'exit' to close): ")
                 client_instance.client_request_service.join_session_request(session_code)
-            case 3:
+            case "3":
                 client_instance.client_request_service.leave_session_request()
-            case 4:
+            case "4":
                 client_instance.client_request_service.roll_dice_request()
-            case 5:
+            case "5":
                 number_1 = input("Enter move one (type 'exit' to close): ")
                 number_2 = input("Enter move two (type 'exit' to close): ")
                 move = [int(number_1)]
                 if number_2:
                     move.append(int(number_2))
                 client_instance.client_request_service.make_move_request(move)
-
+            case _:
+                print("Invalid command")
 
 client = Client()
 client_thread = threading.Thread(target=client.run)

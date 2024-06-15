@@ -71,7 +71,12 @@ class Dispatcher:
                     is_board_empty = game.make_move(move)
                     self.server_response_service.move_made_response(game, move)
                     if is_board_empty:
-                        self.server_response_service.no_moves_response(game)
+                        game.end()
+                        self.server_response_service.game_finished_response(game)
+                        session = self.session_manager.get_session_by_user_socket(client_socket)
+                        self.server_response_service.session_destroyed_response(session)
+                        self.session_manager.delete_session(session.get_session_id())
+
                 case _:
                     raise BadRequestError("Provided command is not valid")
         except Exception as e:
