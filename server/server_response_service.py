@@ -82,7 +82,6 @@ class ServerResponseService:
         for player in session.game.players:
             response["data"]["user_id"] = player["id"]
             response["data"]["current_turn_player_id"] = current_player["id"]
-            print(response)
             self.send(player["socket"], response)
 
     def terminate_game_response(self, players):

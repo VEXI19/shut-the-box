@@ -19,7 +19,7 @@ class Game:
         self.players = [{
             "id": index,
             "socket": player,
-            "board": [i for i in range(1, 10)],
+            "board": self.__reset_board(),
             "last_roll": None,
             "name": "Player 1",
         } for index, player in enumerate(players_sockets)]
@@ -28,6 +28,9 @@ class Game:
 
     def get_players_ids(self):
         return [player["id"] for player in self.players]
+
+    def __reset_board(self):
+        return [i for i in range(1, 10)]
 
     def get_player_id(self, socket):
         for player in self.players:
@@ -116,7 +119,8 @@ class Game:
         player = self.get_current_player()
         self.turn_player_id = (self.turn_player_id + 1) % len(self.players)
 
-        player["board"] = [i for i in range(1, 10)]
+        player["board"] = self.__reset_board()
+        player["last_roll"] = None
 
     def check_win_condition(self):
         player = self.get_current_player()

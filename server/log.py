@@ -69,41 +69,8 @@ class Log:
         message = Log.construct_message(message, exception, client, log_type)
         Log.__write(message)
 
-        if exception is not None:
-            tb_str = ''.join(traceback.format_exception(type(exception), exception, exception.__traceback__))
-            Log.print_colored(tb_str, log_type)
-        elif verbose:
+        # if exception is not None:
+        #     tb_str = ''.join(traceback.format_exception(type(exception), exception, exception.__traceback__))
+        #     Log.print_colored(tb_str, log_type)
+        if verbose:
             Log.print_colored(message, log_type)
-
-    #
-    # @staticmethod
-    # def add_error_log(message, client=None, verbose=True):
-    #     message = Log.construct_message(message, client, Log.__LogType.ERROR)
-    #     Log.__write(message)
-    #
-    #     if verbose:
-    #         Log.print_colored(message, Log.__LogColor.ERROR)
-    #
-    # @staticmethod
-    # def add_warning_log(message, client=None, verbose=True):
-    #     message = Log.construct_message(message, client, Log.__LogType.WARNING)
-    #     Log.__write(message)
-    #
-    #     if verbose:
-    #         Log.print_colored(message, Log.__LogColor.WARNING)
-    #
-    # @staticmethod
-    # def add_info_log(message, client=None, verbose=True):
-    #     message = Log.construct_message(message, client, Log.__LogType.INFO)
-    #     Log.__write(message)
-    #
-    #     if verbose:
-    #         Log.print_colored(message, Log.__LogColor.INFO)
-    #
-    # @staticmethod
-    # def add_server_log(message, client=None, verbose=True):
-    #     message = Log.construct_message(message, client, Log.__LogType.SERVER)
-    #     Log.__write(message)
-    #
-    #     if verbose:
-    #         Log.print_colored(message, Log.__LogColor.SERVER)

@@ -1,10 +1,11 @@
+import os
 import socket
 import threading
 
 import select
 import pickle
-from enums import ServerCommand
 from client_service import ClientRequestService, ClientReceiveService
+from enums import GameState
 from errors import ServerError
 
 
@@ -29,7 +30,7 @@ class Client:
 
         self.inputs = [self.client_socket]
 
-    def run(self):
+    def receive(self):
         while self.inputs:
             readable, _, _ = select.select(self.inputs, [], [])
 
@@ -67,39 +68,69 @@ class Client:
             print(f'Socket error: {e}')
 
     def close(self):
-        print(self.client_socket)
         self.client_socket.close()
 
 
-def event_trigger(client_instance):
-    while True:
-        command = input("Enter message to send to server (type 'exit' to close): ")
-        match command:
-            case "1":
-                client_instance.client_request_service.create_session_request()
-            case "2":
-                session_code = input("Enter session code (type 'exit' to close): ")
-                client_instance.client_request_service.join_session_request(session_code)
-            case "3":
-                client_instance.client_request_service.leave_session_request()
-            case "4":
-                client_instance.client_request_service.roll_dice_request()
-            case "5":
-                number_1 = input("Enter move one (type 'exit' to close): ")
-                number_2 = input("Enter move two (type 'exit' to close): ")
-                move = [int(number_1)]
-                if number_2:
-                    move.append(int(number_2))
-                client_instance.client_request_service.make_move_request(move)
-            case _:
-                print("Invalid command")
+class ClientCLI:
+    def __init__(self, client_instance):
+        self.client_instance = client_instance
+
+    def run(self):
+        print("Client CLI running")
+        print("COMMANDS:")
+        print("1. Create session")
+        print("2. Join session")
+        print("3. Leave session")
+        print("4. Roll dice")
+        print("5. Make move")
+        print("6. Exit")
+        print("clear: Clear the screen")
+        while True:
+            command = input("")
+            match command:
+                case "1":
+                    self.client_instance.client_request_service.create_session_request()
+                case "2":
+                    session_code = input("Enter session code: ")
+                    self.client_instance.client_request_service.join_session_request(session_code)
+                case "3":
+                    self.client_instance.client_request_service.leave_session_request()
+                case "4":
+                    self.client_instance.client_request_service.roll_dice_request()
+                case "5":
+                    try:
+                        number_1 = int(input("Enter move one: "))
+                        number_2 = int(input("Enter move two (type 0 if you want just one number): "))
+                        move = [number_1]
+                        if number_2:
+                            move.append(number_2)
+                    except ValueError:
+                        print("Invalid value, please enter a number")
+                        continue
+                    self.client_instance.client_request_service.make_move_request(move)
+                case "6":
+                    self.client_instance.close()
+                    break
+                case "7":
+                    os.system('cls')
+                    print("Client CLI running")
+                    print("COMMANDS:")
+                    print("1. Create session")
+                    print("2. Join session")
+                    print("3. Leave session")
+                    print("4. Roll dice")
+                    print("5. Make move")
+                    print("6. Exit")
+                    print("clear: Clear the screen")
+                case _:
+                    print("Invalid command")
+
 
 client = Client()
-client_thread = threading.Thread(target=client.run)
+client_thread = threading.Thread(target=client.receive)
 client_thread.start()
 
-event_thread = threading.Thread(target=event_trigger, args=(client,))
-event_thread.start()
+client_cli = ClientCLI(client)
+client_cli_thread = threading.Thread(target=client_cli.run)
+client_cli_thread.start()
 
-client_thread.join()
-client.close()

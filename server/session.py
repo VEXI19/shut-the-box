@@ -70,8 +70,10 @@ class SessionManager:
         raise SessionError("User is not part of any session")
 
     def delete_session(self, session_id):
-        if self.__remove_session(session_id):
-            return True
+        for session in self.sessions:
+            if session.get_session_id() == session_id:
+                self.sessions.remove(session)
+                return True
         raise SessionError(f"Session with id {session_id} does not exist")
 
     def __get_session(self, session_id):

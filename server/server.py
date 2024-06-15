@@ -53,7 +53,6 @@ class Server:
                             if data_bytes:
                                 message = pickle.loads(data_bytes)
                                 Log.log(f"Message received", Log.LogType.INFO, client=sock)
-                                print(f"Message: {message}")
                                 self.dispatcher.dispatch(message, sock)
                         else:
                             # No data received, close the connection

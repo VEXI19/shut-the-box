@@ -1,6 +1,5 @@
-from enums import ServerCommand, ResponseStatus, ResponseType
+from enums import ServerCommand, ResponseStatus, ResponseType, GameState
 import pickle
-
 from errors import ServerError
 
 
@@ -102,39 +101,55 @@ class ClientReceiveService:
                         self.__player_eliminated()
                     case ResponseType.MOVE_MADE:
                         self.__move_made()
+                    case ResponseType.GAME_ENDED:
+                        self.__game_ended()
+                    case ResponseType.SESSION_DESTROYED:
+                        self.__session_destroyed()
                     case _:
                         raise ValueError("Received message contains an unknown response_type field")
 
     def __session_created(self):
-        print(self.message["data"])
+        print(f"Session created.")
+        print(f"Session code: {self.message['data']['session_code']}")
 
     def __session_joined(self):
-        print(self.message["data"])
+        print(f"Session joined.")
+        print(f"Session code: {self.message['data']['session_code']}")
 
     def __session_left(self):
-        print(self.message["data"])
+        print(f"{self.message['data']['message']}")
 
     def __user_joined(self):
-        print(self.message["data"])
+        print(f"{self.message['data']['message']}")
 
     def __user_left(self):
-        print(self.message["data"])
+        print(f"{self.message['data']['message']}")
 
     def __game_started(self):
-        print(self.message["data"])
+        print(f"Game started.")
+        if self.message["data"]["current_turn_player_id"] == self.message["data"]["user_id"]:
+            print("It is your turn")
+        else:
+            print(f"It is player {self.message['data']['current_turn_player_id']}'s turn")
 
     def __game_terminated(self):
-        print(self.message["data"])
+        print(f"{self.message['data']['message']}")
 
     def __dice_rolled(self):
-        print(self.message["data"])
+        print(f"Dice rolled: {self.message['data']['roll_result']}")
+        print(f"Current board: {self.message['data']['board']}")
 
     def __no_moves(self):
-        print(self.message["data"])
+        print(f"No moves available, current turn player id: {self.message['data']['current_turn_player_id']}")
 
     def __player_eliminated(self):
         print(self.message["data"])
 
     def __move_made(self):
-        print(self.message["data"])
+        print(f"Move made, chosen numbers: {self.message['data']['move']}")
 
+    def __game_ended(self):
+        print(f"Game ended: {self.message['data']['message']}")
+
+    def __session_destroyed(self):
+        print(f"Session destroyed, you have been removed from the session")
